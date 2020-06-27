@@ -1,0 +1,10 @@
+{
+  "name": "serverless-github-kanban-link",
+  "description": "",
+  "version": "0.1.0",
+  "dependencies": {},
+  "devDependencies": {
+    "@serverless/safeguards-plugin": "^1.0.1",
+    "serverless-offline": "^6.7.0"
+  }
+}

@@ -1,0 +1,29 @@
+frameworkVersion: ^1.82.0
+
+service: serverless-github-kanban-link
+
+# app and org for use with dashboard.serverless.com
+org: jameslaviron
+app: kanban-link-app
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: eu-west-1
+
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - http:
+          path: hello
+          method: GET
+
+plugins:
+  - serverless-offline
+  - '@serverless/safeguards-plugin'
+
+custom:
+  safeguards:
+    - safeguard: no-secret-env-vars
+      title: No secrets in lambda ENV VARs
