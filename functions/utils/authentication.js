@@ -13,8 +13,6 @@ async function getRefreshToken() {
     exp: now + 60, // JWT expiration time (10 minute maximum)
     iss: clientId, // Your Zube client id
   }, privateKey, { algorithm: 'RS256' })
-
-  return refreshJwt
 }
 
 async function getAccessToken(refreshToken) {
@@ -26,7 +24,7 @@ async function getAccessToken(refreshToken) {
     },
   })
 
-  return JSON.parse(result.body).access_token
+  return result
 }
 
 export async function authenticate() {

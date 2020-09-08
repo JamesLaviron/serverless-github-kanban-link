@@ -5,9 +5,12 @@ let accessToken
 /**
  * Webhook main method
  */
-export async function updateKanban() {
-  console.log('Update kanban!')
+export async function updateKanban(event, context, callback) {
+  try {
+    accessToken = await authenticate()
 
-  accessToken = await authenticate()
-  console.log(accessToken)
+    return callback(null, accessToken)
+  } catch (error) {
+    return callback(`Problem while connecting to kanban API: ${error.message}`)
+  }
 }
