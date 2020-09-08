@@ -1,12 +1,14 @@
-const fs = require('fs')
-const jsonwebtoken = require('jsonwebtoken')
-const got = require("got")
+import * as fs from 'fs'
+import jsonwebtoken from 'jsonwebtoken'
+import got from 'got'
 
-const private_key = fs.readFileSync(`/home/victor/Documents/projects/zube/zube_api_key.pem`)
+const private_key = fs.readFileSync(`./zube_api_key.pem`),
+    clientId = `b96e385e-a997-11ea-bf0c-4701f8cf65fa`,
+    baseUrl = `https://zube.io/api/`
 
 export async function authenticate() {
     const refreshToken = await getRefreshToken()
-    accessToken = await getAccessToken(refreshToken)
+    const accessToken = await getAccessToken(refreshToken)
 
     return accessToken
 }
