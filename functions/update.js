@@ -1,11 +1,13 @@
 import { authenticate } from './utils/authentication'
 
+let accessToken
+
 /**
  * Webhook main method
  */
 export async function updateKanban() {
-    console.log(`Update kanban!`)
+  console.log('Update kanban!')
 
-    var accessToken = await authenticate()
-    console.log(accessToken)
+  accessToken = await authenticate()
+  console.log(accessToken)
 }
