@@ -12,12 +12,12 @@ provider:
   region: eu-west-1
 
 functions:
-  hello:
-    handler: handler.hello
+  update:
+    handler: handler.updateKanban
     events:
       - http:
-          path: hello
-          method: GET
+          path: webhook
+          method: POST
 
 plugins:
   - serverless-offline
