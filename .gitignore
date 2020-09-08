@@ -108,3 +108,6 @@ package-lock.json
 
 #Webpack
 .webpack
+
+#Zube
+zube_api_key.pem
