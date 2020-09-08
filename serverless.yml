@@ -22,8 +22,13 @@ functions:
 plugins:
   - serverless-offline
   - '@serverless/safeguards-plugin'
+  - serverless-webpack
 
 custom:
   safeguards:
     - safeguard: no-secret-env-vars
       title: No secrets in lambda ENV VARs
+  webpack:
+    includeModules: true
+
+
