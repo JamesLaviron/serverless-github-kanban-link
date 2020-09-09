@@ -9,6 +9,7 @@ app: kanban-link-app
 provider:
   name: aws
   runtime: nodejs12.x
+  stage: ${opt:stage, 'default'}
   region: eu-west-1
 
 functions:
@@ -18,6 +19,9 @@ functions:
       - http:
           path: webhook
           method: POST
+    environment:
+      CLIENT_ID: ${param:clientId}
+      BASE_URL: 'https://zube.io/api/'
 
 plugins:
   - serverless-offline

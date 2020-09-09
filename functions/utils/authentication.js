@@ -3,8 +3,8 @@ import jsonwebtoken from 'jsonwebtoken'
 import got from 'got'
 
 const privateKey = fs.readFileSync('./zube_api_key.pem')
-const clientId = 'b96e385e-a997-11ea-bf0c-4701f8cf65fa'
-const baseUrl = 'https://zube.io/api/'
+const clientId = process.env.CLIENT_ID
+const baseUrl = process.env.BASE_URL
 
 async function getRefreshToken() {
   const now = Math.floor(Date.now() / 1000)
