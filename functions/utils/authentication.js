@@ -2,7 +2,7 @@ import * as fs from 'fs'
 import jsonwebtoken from 'jsonwebtoken'
 import got from 'got'
 
-const privateKey = fs.readFileSync('./zube_api_key.pem')
+const privateKey = process.env.API_KEY
 const clientId = process.env.CLIENT_ID
 const baseUrl = process.env.BASE_URL
 
