@@ -2,7 +2,7 @@ import * as fs from 'fs'
 import jsonwebtoken from 'jsonwebtoken'
 import got from 'got'
 
-const privateKey = process.env.API_KEY
+const privateKey = process.env.API_KEY.replace(/\\n/gm, '\n')
 const clientId = process.env.CLIENT_ID
 const baseUrl = process.env.BASE_URL
 
