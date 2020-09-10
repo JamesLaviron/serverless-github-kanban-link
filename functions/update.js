@@ -9,8 +9,14 @@ export async function updateKanban(event, context, callback) {
   try {
     accessToken = await authenticate()
 
-    return callback(null, accessToken)
+    return callback(null, {
+      statusCode: 200,
+      body: message,
+    })
   } catch (error) {
-    return callback(`Problem while connecting to kanban API: ${error.message}`)
+    return callback(null, {
+      statusCode: 500,
+      body: `Problem while connecting to kanban API: ${e.message}`,
+    })
   }
 }
