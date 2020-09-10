@@ -16,7 +16,7 @@ export async function updateKanban(event, context, callback) {
   } catch (error) {
     return callback(null, {
       statusCode: 500,
-      body: `Problem while connecting to kanban API: ${e.message}`,
+      body: `Problem while connecting to kanban API: ${error.message}`,
     })
   }
 }
