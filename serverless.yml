@@ -25,7 +25,7 @@ functions:
     environment:
       CLIENT_ID: ${param:clientId}
       BASE_URL: 'https://zube.io/api/'
-      API_KEY: '${self:custom.mySecret.zubeApiKey}'
+      API_KEY: ${self:custom.mySecret.zubeApiKey}
 
 plugins:
   - serverless-offline
