@@ -31,7 +31,10 @@ async function getAccessToken(refreshToken) {
 
 export async function authenticate() {
   const refreshToken = await getRefreshToken()
+  console.info(`Refresh token: ${refreshToken}`)
   const accessToken = await getAccessToken(refreshToken)
+
+  console.info(`Access token: ${accessToken}`)
 
   return accessToken
 }

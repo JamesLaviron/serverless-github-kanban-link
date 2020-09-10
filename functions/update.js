@@ -7,13 +7,17 @@ let accessToken
  */
 export async function updateKanban(event, context, callback) {
   try {
+    console.warn('Begin execution')
+
     accessToken = await authenticate()
 
+    console.warn('First callback')
     return callback(null, {
       statusCode: 200,
-      body: message,
+      body: `Successfully authenticate to kanban's API: ${accessToken}`,
     })
   } catch (error) {
+    console.warn('Second callback')
     return callback(null, {
       statusCode: 500,
       body: `Problem while connecting to kanban API: ${error.message}`,
