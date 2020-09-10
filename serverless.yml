@@ -11,6 +11,9 @@ provider:
   runtime: nodejs12.x
   stage: ${opt:stage, 'default'}
   region: eu-west-1
+  tracing:
+    apiGateway: true
+    lambda: true
 
 functions:
   update:
@@ -22,6 +25,7 @@ functions:
     environment:
       CLIENT_ID: ${param:clientId}
       BASE_URL: 'https://zube.io/api/'
+      API_KEY: '${self:custom.mySecret.zubeApiKey}'
 
 plugins:
   - serverless-offline
@@ -29,6 +33,7 @@ plugins:
   - serverless-webpack
 
 custom:
+  mySecret: ${ssm:/aws/reference/secretsmanager/dev/kanban/zube~true}
   safeguards:
     - safeguard: no-secret-env-vars
       title: No secrets in lambda ENV VARs
