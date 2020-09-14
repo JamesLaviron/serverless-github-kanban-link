@@ -1,7 +1,5 @@
 import { authenticate } from './utils/authentication'
 
-let accessToken
-
 /**
  * Webhook main method
  */
@@ -9,7 +7,7 @@ export async function updateKanban(event, context, callback) {
   try {
     console.warn('Begin execution')
 
-    accessToken = await authenticate()
+    let accessToken = await authenticate()
 
     console.warn('First callback')
     return callback(null, {

@@ -2,11 +2,10 @@ import * as fs from 'fs'
 import jsonwebtoken from 'jsonwebtoken'
 import got from 'got'
 
-const privateKey = process.env.API_KEY.replace(/\\n/gm, '\n')
 const clientId = process.env.CLIENT_ID
-const baseUrl = process.env.BASE_URL
 
 async function getRefreshToken() {
+  const privateKey = process.env.API_KEY.replace(/\\n/gm, '\n')
   const now = Math.floor(Date.now() / 1000)
   const refreshJwt = jsonwebtoken.sign({
     iat: now, // Issued at time
@@ -18,6 +17,7 @@ async function getRefreshToken() {
 }
 
 async function getAccessToken(refreshToken) {
+  const baseUrl = process.env.BASE_URL
   const result = await got.post(`${baseUrl}users/tokens`, {
     headers: {
       Authorization: `Bearer ${refreshToken}`,
