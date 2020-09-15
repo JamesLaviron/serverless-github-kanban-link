@@ -5,5 +5,26 @@
     "react": {
       "version": "999.999.999"
     }
+  },
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module"
+  },
+  "env": {
+    "es6": true,
+    "node": true
+  },
+  "rules": {
+    "quotes": [
+      2,
+      "backtick",
+      {
+        "avoidEscape": true
+      }
+    ],
+    "yoda": [
+      "error",
+      "always"
+    ]
   }
 }
