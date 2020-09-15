@@ -1,4 +1,4 @@
-frameworkVersion: ^1.82.0
+frameworkVersion: ^2.0.0
 
 service: serverless-github-kanban-link
 
