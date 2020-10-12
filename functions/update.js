@@ -1,7 +1,7 @@
-import { authenticate } from './utils/authentication'
-import { updateState } from './utils/zube'
+
+import { updateStory } from './utils/zube'
 import { getStory } from './utils/utils'
-import { validateWebhook } from './utils/github'
+import { validateWebhook, getEventRequestBody } from './utils/github'
 
 /**
  * Webhook main method
@@ -11,13 +11,9 @@ export async function updateKanban(event, context, callback) {
 
   // Configuration
   let response
-  const triggeringLabels = [`bug`, `documentation`]
 
   // Get body from request
-  let requestBody = event.body
-  requestBody = requestBody.replace(`payload=`, ``)
-  requestBody = JSON.parse(decodeURIComponent(requestBody))
-
+  const requestBody = getEventRequestBody(event)
   console.log(requestBody)
 
   // when creating the webhook
@@ -43,22 +39,15 @@ export async function updateKanban(event, context, callback) {
     return callback(null, response)
   }
 
-  const { labels } = requestBody.pull_request
-  const { action } = requestBody.action
-
-  // Get access token to request API
-  const accessToken = await authenticate()
-
-  if (!accessToken) {
+  // Check if event type is supported
+  if (!(requestBody && ((`pull_request` in requestBody) || (`ref` in requestBody)))) {
     response = {
-      statusCode: 500,
-      body: `Couldn't authenticate to kanban's API`,
+      statusCode: 400,
+      body: `Event is not a Pull Request or a push event`,
     }
 
     return callback(null, response)
   }
-
-  console.log(accessToken)
 
   // Get PR description
   const description = requestBody.pull_request.body
@@ -68,25 +57,14 @@ export async function updateKanban(event, context, callback) {
 
   if (!zubeStory) {
     response = {
-      statusCode: 500,
+      statusCode: 400,
       body: `Couldn't find zube story inside PR description`,
     }
 
     return callback(null, response)
   }
 
-  labels.forEach((element) => {
-    if (triggeringLabels.includes(element.name)) {
-      console.log(`Ouch, we got some things to do boys`)
-    }
+  response = await updateStory(zubeStory, requestBody)
 
-    if (`documentation` === element.name) {
-      updateState(zubeStory, action, ``)
-    }
-  })
-
-  return callback(null, {
-    statusCode: 200,
-    body: `Successfully authenticate to kanban's API: ${accessToken}`,
-  })
+  return callback(null, response)
 }
