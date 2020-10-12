@@ -40,7 +40,7 @@ export async function updateKanban(event, context, callback) {
   }
 
   // Check if event type is supported
-  if (!(requestBody && ((`pull_request` in requestBody) || (`ref` in requestBody)))) {
+  if (!(requestBody && ((`pull_request` in requestBody)))) {
     response = {
       statusCode: 400,
       body: `Event is not a Pull Request or a push event`,

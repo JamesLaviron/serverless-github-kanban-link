@@ -100,18 +100,20 @@ async function updateCardBody(accessToken, card) {
 }
 
 async function updateCardCategory(accessToken, card, labels) {
-  for (const label of labels)  {
-
+  const promises = []
+  for (const label of labels) {
     console.log(label)
     console.log(label.name)
     if (`Work+In+Progress` === label.name) {
-      response = await updateCardState(accessToken, card, inProgress)
+      promises.push(updateCardState(accessToken, card, inProgress))
     }
 
     if (`Ready+for+Review` === label.name) {
-      response = await updateCardState(accessToken, card, readyForReview)
+      promises.push(updateCardState(accessToken, card, readyForReview))
     }
   }
+
+  response = await Promise.all(promises)
 
   return response
 }
@@ -142,14 +144,19 @@ export async function updateStory(storyUrl, requestBody) {
   }
 
   // Get github event informations
-  const { action = `push` } = requestBody
+  const { action = null } = requestBody
+
+  console.log(action)
+  console.log(requestBody.merged)
+
 
   // Manage pull request merge
-  if (`push` === action) {
+  if (`closed` === action && requestBody.merged) {
+    // TODO - refacto this method so that it returns null
     await updateCardState(accessToken, card, deployedState)
 
     // Update story description to set destination preproduction environment if possible
-    const { destinationBranch = null } = getDestinationbranch(requestBody)
+    const destinationBranch = getDestinationbranch(requestBody)
     if (`master` === destinationBranch) {
       card.body = addDeployEnvToStory(card, `Story déployée sur la branche master`)
     } else {
