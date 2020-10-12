@@ -3,3 +3,19 @@ export function getStory(content) {
 
   return content.match(myRegex)
 }
+
+export function getCardNumber(cardUrl) {
+  return /[^/]*$/.exec(cardUrl)[0]
+}
+
+export function addDeployEnvToStory(storyDescription, deployEnv) {
+  console.log(storyDescription)
+  console.log(deployEnv)
+  console.log(`${storyDescription}\r\n\r\${deployEnv}`)
+
+  return `${storyDescription}\r\n\r\${deployEnv}`
+}
+
+export function getDestinationbranch(data) {
+  return /[^/]*$/.exec(data.ref)[0]
+}

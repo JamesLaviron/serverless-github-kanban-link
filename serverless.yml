@@ -24,8 +24,12 @@ functions:
           method: POST
     environment:
       CLIENT_ID: ${param:clientId}
-      BASE_URL: 'https://zube.io/api/'
+      KANBAN_BASE_URL: ${param:kanbanApiBaseUrl}
       API_KEY: ${self:custom.mySecret.zubeApiKey}
+      KANBAN_CLIENT_ID: ${param:kanbanClientId}
+      WIP_STATE: ${param:inProgress}
+      RFR_STATE: ${param:readyForReview}
+      DEPLOYED_STATE: ${param:deployed}
 
 plugins:
   - serverless-offline

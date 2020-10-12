@@ -17,3 +17,10 @@ export function validateWebhook(body, requiredEvent = `pull_request`) {
 
   return `Hello ${body.sender.login}, the webhook is now enabled for ${body.repository.full_name}, enjoy!`
 }
+
+export function getEventRequestBody(event) {
+  let requestBody = event.body
+  requestBody = requestBody.replace(`payload=`, ``)
+
+  return JSON.parse(decodeURIComponent(requestBody))
+}

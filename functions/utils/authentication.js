@@ -16,7 +16,7 @@ async function getRefreshToken() {
 }
 
 async function getAccessToken(refreshToken) {
-  const baseUrl = process.env.BASE_URL
+  const baseUrl = process.env.KANBAN_BASE_URL
   const result = await got.post(`${baseUrl}users/tokens`, {
     headers: {
       Authorization: `Bearer ${refreshToken}`,
@@ -25,7 +25,7 @@ async function getAccessToken(refreshToken) {
     },
   })
 
-  return result
+  return JSON.parse(result.body).access_token
 }
 
 export async function authenticate() {
