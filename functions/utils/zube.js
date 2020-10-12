@@ -14,63 +14,106 @@ async function getAccessToken() {
   // Get access token to request API
   const accessToken = await authenticate()
 
-  console.log(accessToken)
-
   return accessToken
 }
 
 async function getCardByNumber(accessToken, cardNumber) {
-  const result = await got(`${baseUrl}cards?where[number]=${cardNumber}`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      Accept: `application/json`,
-      'Content-Type': `application/json`,
-      'X-Client-ID': clientId,
-    },
-  })
+  try {
+    const result = await got(`${baseUrl}cards?where[number]=${cardNumber}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        Accept: `application/json`,
+        'Content-Type': `application/json`,
+        'X-Client-ID': clientId,
+      },
+    })
 
-  return JSON.parse(result.body).data[0]
+    return JSON.parse(result.body).data[0]
+  } catch (e) {
+    console.error(e)
+
+    return null
+  }
 }
 
 async function updateCardState(accessToken, card, categoryName) {
-  await got.put(`${baseUrl}cards/${card.id}/move`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': `application/json`,
-      'X-Client-ID': clientId,
-    },
-    body: JSON.stringify({
-      destination: {
-        position: 1,
-        type: `category`,
-        name: categoryName,
-        workspace_id: card.workspace_id,
-      },
-    }),
-  })
+  try {
+    console.log(card)
+    console.log(categoryName)
+    console.log(accessToken)
 
-  return {
-    statusCode: 200,
-    body: `Put card number ${card.number} inside category ${categoryName}`,
+    await got.put(`${baseUrl}cards/${card.id}/move`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': `application/json`,
+        'X-Client-ID': clientId,
+      },
+      body: JSON.stringify({
+        destination: {
+          position: 1,
+          type: `category`,
+          name: categoryName,
+          workspace_id: card.workspace_id,
+        },
+      }),
+    })
+
+    return {
+      statusCode: 200,
+      body: `Put card number ${card.number} inside category ${categoryName}`,
+    }
+  } catch (e) {
+    console.error(e)
+
+    return {
+      statusCode: 500,
+      body: `Process finished with error: ${e.message}`,
+    }
   }
 }
 
 async function updateCardBody(accessToken, card) {
-  await got.put(`${baseUrl}cards/${card.id}`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      'Content-Type': `application/json`,
-      'X-Client-ID': clientId,
-    },
-    body: JSON.stringify({
-      body: card.body,
-    }),
-  })
+  try {
+    await got.put(`${baseUrl}cards/${card.id}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': `application/json`,
+        'X-Client-ID': clientId,
+      },
+      body: JSON.stringify({
+        body: card.body,
+      }),
+    })
 
-  return {
-    statusCode: 200,
-    body: `Update body of card number ${card.number}`,
+    return {
+      statusCode: 200,
+      body: `Update body of card number ${card.number}`,
+    }
+  } catch (e) {
+    console.error(e)
+
+    return {
+      statusCode: 500,
+      body: `Process finished with error: ${e.message}`,
+    }
   }
+}
+
+async function updateCardCategory(accessToken, card, labels) {
+  for (const label of labels)  {
+
+    console.log(label)
+    console.log(label.name)
+    if (`Work+In+Progress` === label.name) {
+      response = await updateCardState(accessToken, card, inProgress)
+    }
+
+    if (`Ready+for+Review` === label.name) {
+      response = await updateCardState(accessToken, card, readyForReview)
+    }
+  }
+
+  return response
 }
 
 export async function updateStory(storyUrl, requestBody) {
@@ -89,7 +132,14 @@ export async function updateStory(storyUrl, requestBody) {
   }
 
   const cardNumber = getCardNumber(storyUrl)
-  const card = getCardByNumber(accessToken, cardNumber)
+  const card = await getCardByNumber(accessToken, cardNumber)
+
+  if (!card) {
+    return {
+      statusCode: 500,
+      body: `Issue to find card with number ${cardNumber}`,
+    }
+  }
 
   // Get github event informations
   const { action = `push` } = requestBody
@@ -106,37 +156,20 @@ export async function updateStory(storyUrl, requestBody) {
       card.body = addDeployEnvToStory(card, `Story non déployée sur master -> à voir avec le développeur de la story`)
     }
 
-    await updateCardBody(accessToken, card)
+    response = await updateCardBody(accessToken, card)
 
-    return {
-      statusCode: 200,
-      body: `Successfully updated card state`,
-    }
+    return response
   }
 
   // Apply changes if needed depending on PR labels
   const { labels = null } = requestBody.pull_request
-  if (`labeled` === action) {
 
+  if (`labeled` === action && labels) {
     console.log(labels)
-    for (const label in labels) {
-      console.log(label)
-      console.log(label.name)
+    response = await updateCardCategory(accessToken, card, labels)
 
-      if (`Work In Progress` === label.name) {
-        return updateCardState(accessToken, card, inProgress)
-      }
-
-      if (`Ready For Review` === label.name) {
-        return updateCardState(accessToken, card, readyForReview)
-      }
-    }
+    return response
     // TODO - manage where we have mutliple triggering labels on same PR
-
-    return {
-      statusCode: 400,
-      body: `Didn't update story state because there were no triggering labels`,
-    }
   }
 
   return {

@@ -36,7 +36,7 @@ export async function updateKanban(event, context, callback) {
       }
     }
 
-    return callback(null, response)
+    return response
   }
 
   // Check if event type is supported
@@ -46,7 +46,7 @@ export async function updateKanban(event, context, callback) {
       body: `Event is not a Pull Request or a push event`,
     }
 
-    return callback(null, response)
+    return response
   }
 
   // Get PR description
@@ -61,10 +61,10 @@ export async function updateKanban(event, context, callback) {
       body: `Couldn't find zube story inside PR description`,
     }
 
-    return callback(null, response)
+    return response
   }
 
   response = await updateStory(zubeStory, requestBody)
 
-  return callback(null, response)
+  return response
 }
