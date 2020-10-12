@@ -147,11 +147,11 @@ export async function updateStory(storyUrl, requestBody) {
   const { action = null } = requestBody
 
   console.log(action)
-  console.log(requestBody.merged)
+  console.log(requestBody.pull_request.merged)
 
 
   // Manage pull request merge
-  if (`closed` === action && requestBody.merged) {
+  if (`closed` === action && requestBody.pull_request.merged) {
     // TODO - refacto this method so that it returns null
     await updateCardState(accessToken, card, deployedState)
 
