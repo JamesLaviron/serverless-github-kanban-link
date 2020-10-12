@@ -44,6 +44,7 @@ export async function updateKanban(event, context, callback) {
   }
 
   const { labels } = requestBody.pull_request
+  const { action } = requestBody.action
 
   // Get access token to request API
   const accessToken = await authenticate()
@@ -56,6 +57,8 @@ export async function updateKanban(event, context, callback) {
 
     return callback(null, response)
   }
+
+  console.log(accessToken)
 
   // Get PR description
   const description = requestBody.pull_request.body
@@ -78,7 +81,7 @@ export async function updateKanban(event, context, callback) {
     }
 
     if (`documentation` === element.name) {
-      updateState(zubeStory, ``)
+      updateState(zubeStory, action, ``)
     }
   })
 
