@@ -9,9 +9,10 @@ export function getCardNumber(cardUrl) {
 }
 
 export function addDeployEnvToStory(storyDescription, deployEnvText) {
-  console.log(storyDescription)
-  console.log(deployEnvText)
+  console.log(`storyDescription: ${storyDescription}`)
+  console.log(`deployEnvText: ${deployEnvText}`)
   console.log(`${storyDescription}\r\n\r\\/${deployEnvText}`)
+  console.log(`${storyDescription}\r\n\r\${deployEnvText}`)
 
-  return `${storyDescription}\r\n\r\\/${deployEnvText}`
+  return `${storyDescription}\r\n\r\${deployEnvText}`
 }
