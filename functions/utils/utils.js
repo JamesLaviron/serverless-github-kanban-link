@@ -14,5 +14,6 @@ export function addDeployEnvToStory(storyDescription, deployEnvText) {
   console.log(`${storyDescription}\r\n\r\\/${deployEnvText}`)
   console.log(`${storyDescription}\r\n\r\${deployEnvText}`)
 
-  return `${storyDescription}\r\n\r\${deployEnvText}`
+  return `${storyDescription}\r\n\r\
+    ${deployEnvText}`
 }

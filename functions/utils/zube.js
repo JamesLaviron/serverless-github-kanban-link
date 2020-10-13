@@ -1,5 +1,5 @@
 import got from 'got'
-import { addDeployEnvToStory, getCardNumber, getDestinationbranch } from './utils'
+import { addDeployEnvToStory, getCardNumber } from './utils'
 import { authenticate } from './authentication'
 
 const baseUrl = process.env.KANBAN_BASE_URL
@@ -144,7 +144,6 @@ export async function updateStory(storyUrl, requestBody) {
 
   console.log(action)
   console.log(requestBody.pull_request.merged)
-
 
   // Manage pull request merge
   if (`closed` === action && requestBody.pull_request.merged) {
