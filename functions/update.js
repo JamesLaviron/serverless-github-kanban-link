@@ -1,4 +1,3 @@
-
 import { updateStory } from './utils/zube'
 import { getStory } from './utils/utils'
 import { validateWebhook, getEventRequestBody } from './utils/github'
