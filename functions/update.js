@@ -6,7 +6,7 @@ import { validateWebhook, getEventRequestBody } from './utils/github'
 /**
  * Webhook main method
  */
-export async function updateKanban(event, context, callback) {
+export async function updateKanban(event) {
   console.info(`Begin execution`)
 
   // Configuration
