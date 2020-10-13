@@ -23,7 +23,6 @@ functions:
           path: webhook
           method: POST
     environment:
-      CLIENT_ID: ${param:clientId}
       KANBAN_BASE_URL: ${param:kanbanApiBaseUrl}
       API_KEY: ${self:custom.mySecret.zubeApiKey}
       KANBAN_CLIENT_ID: ${param:kanbanClientId}
