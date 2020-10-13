@@ -143,21 +143,26 @@ async function updateCardCategory(accessToken, card, labels) {
 
   if (promises) {
     response = await Promise.all(promises)
-  } else {
-    return {
-      statusCode: 400,
-      body: `Event is not a Pull Request or a push event`,
-    }
+    .then(function() {
+      return {
+        statusCode: 200,
+        body: `Update body of card number ${card.number}`,
+      }
+    })
+    .catch(function(e) {
+      return {
+        statusCode: 500,
+        body: `Process finished with error: ${e.message}`,
+      }
+    })
+
+    return response
   }
 
-  if (null === response) {
-    return {
-      statusCode: 500,
-      body: `Couldn't update card successfully`,
-    }
+  return {
+    statusCode: 400,
+    body: `Event is not a Pull Request or a push event`,
   }
-
-  return response
 }
 
 export async function updateStory(storyUrl, requestBody) {
