@@ -1,7 +1,7 @@
 import jsonwebtoken from 'jsonwebtoken'
 import got from 'got'
 
-const clientId = process.env.CLIENT_ID
+const clientId = process.env.KANBAN_CLIENT_ID
 
 async function getRefreshToken() {
   const privateKey = process.env.API_KEY.replace(/\\n/gm, `\n`)
