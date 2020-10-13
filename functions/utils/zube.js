@@ -161,6 +161,8 @@ export async function updateStory(storyUrl, requestBody) {
 
     response = await updateCardBody(accessToken, card)
 
+    console.log(response)
+
     return response
   }
 
