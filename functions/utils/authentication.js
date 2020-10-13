@@ -3,6 +3,11 @@ import got from 'got'
 
 const clientId = process.env.KANBAN_CLIENT_ID
 
+/**
+ * Get refresh token
+ *
+ * @returns {string}
+ */
 async function getRefreshToken() {
   const privateKey = process.env.API_KEY.replace(/\\n/gm, `\n`)
   const now = Math.floor(Date.now() / 1000)
@@ -15,6 +20,13 @@ async function getRefreshToken() {
   return refreshJwt
 }
 
+/**
+ * Get access toekn from zube API
+ *
+ * @param {string} refreshToken
+ *
+ * @returns {string}
+ */
 async function getAccessToken(refreshToken) {
   const baseUrl = process.env.KANBAN_BASE_URL
   const result = await got.post(`${baseUrl}users/tokens`, {
@@ -28,6 +40,9 @@ async function getAccessToken(refreshToken) {
   return JSON.parse(result.body).access_token
 }
 
+/**
+ * Authenticate to zube API
+ */
 export async function authenticate() {
   const refreshToken = await getRefreshToken()
   const accessToken = await getAccessToken(refreshToken)

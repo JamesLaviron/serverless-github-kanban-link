@@ -8,7 +8,6 @@ import { validateWebhook, getEventRequestBody } from './utils/github'
 export async function updateKanban(event) {
   console.info(`Begin execution`)
 
-  // Configuration
   let response
 
   // Get body from request

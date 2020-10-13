@@ -10,6 +10,9 @@ const readyForReview = process.env.RFR_STATE
 
 let response
 
+/**
+ * Get access token to connect to zube API
+ */
 async function getAccessToken() {
   // Get access token to request API
   const accessToken = await authenticate()
@@ -17,6 +20,14 @@ async function getAccessToken() {
   return accessToken
 }
 
+/**
+ * Get card using its number
+ *
+ * @param {string} accessToken
+ * @param {int} cardNumber
+ *
+ * @returns {Object} card
+ */
 async function getCardByNumber(accessToken, cardNumber) {
   try {
     const result = await got(`${baseUrl}cards?where[number]=${cardNumber}`, {
@@ -36,6 +47,13 @@ async function getCardByNumber(accessToken, cardNumber) {
   }
 }
 
+/**
+ * Update category of zube's card
+ *
+ * @param {string} accessToken
+ * @param {Object} card
+ * @param {string} categoryName
+ */
 async function updateCardState(accessToken, card, categoryName) {
   try {
     await got.put(`${baseUrl}cards/${card.id}/move`, {
@@ -65,6 +83,14 @@ async function updateCardState(accessToken, card, categoryName) {
   }
 }
 
+/**
+ * Update card description
+ *
+ * @param {string} accessToken
+ * @param {Object} card
+ *
+ * @returns {Object}
+ */
 async function updateCardBody(accessToken, card) {
   try {
     await got.put(`${baseUrl}cards/${card.id}`, {
@@ -92,6 +118,15 @@ async function updateCardBody(accessToken, card) {
   }
 }
 
+/**
+ * Update card category if it contains triggering labels
+ *
+ * @param {string} accessToken
+ * @param {Object} card
+ * @param array labels
+ *
+ * @returns {Object}
+ */
 async function updateCardCategory(accessToken, card, labels) {
   const promises = []
   for (const label of labels) {

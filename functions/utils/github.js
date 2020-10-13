@@ -1,10 +1,10 @@
 /**
  * Validate that the given body is as the required given event in it
  *
- * @param object body          JSON body from GitHub event
- * @param string requiredEvent Required enabled event for the webhook
+ * @param {Object} body          JSON body from GitHub event
+ * @param {string} requiredEvent Required enabled event for the webhook
  *
- * @return string
+ * @returns {string}
  */
 export function validateWebhook(body, requiredEvent = `pull_request`) {
   if (!body.hook.events.includes(requiredEvent)) {
@@ -18,6 +18,13 @@ export function validateWebhook(body, requiredEvent = `pull_request`) {
   return `Hello ${body.sender.login}, the webhook is now enabled for ${body.repository.full_name}, enjoy!`
 }
 
+/**
+ * Get request body from github webhook
+ *
+ * @param {Object} event Github event
+ *
+ * @returns {string}
+ */
 export function getEventRequestBody(event) {
   let requestBody = event.body
   requestBody = requestBody.replace(`payload=`, ``)
