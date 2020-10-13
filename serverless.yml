@@ -36,7 +36,6 @@ plugins:
   - serverless-webpack
 
 custom:
-  mySecret: ${ssm:/aws/reference/secretsmanager/dev/kanban/zube~true}
   safeguards:
     - title: No secrets in lambda ENV VARs
       safeguard: no-secret-env-vars
@@ -51,6 +50,7 @@ custom:
         - eu-west-3
       stage: # this policy will only be enforced if you deploy to prod or qa
         - prod
+  mySecret: ${ssm:/aws/reference/secretsmanager/dev/kanban/zube~true}
   webpack:
     includeModules: true
 
