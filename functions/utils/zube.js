@@ -140,6 +140,7 @@ async function updateCardCategory(accessToken, card, labels) {
       promises.push(updateCardState(accessToken, card, readyForReview))
     }
   }
+
   if (promises) {
     response = await Promise.all(promises)
   } else {
@@ -149,7 +150,7 @@ async function updateCardCategory(accessToken, card, labels) {
     }
   }
 
-  if (!response) {
+  if (null === response) {
     return {
       statusCode: 500,
       body: `Couldn't update card successfully`,
@@ -164,7 +165,6 @@ export async function updateStory(storyUrl, requestBody) {
 
   // Retrieve card from API
   const accessToken = await getAccessToken()
-
   if (!accessToken) {
     return {
       statusCode: 500,
@@ -174,7 +174,6 @@ export async function updateStory(storyUrl, requestBody) {
 
   const cardNumber = getCardNumber(storyUrl)
   const card = await getCardByNumber(accessToken, cardNumber)
-
   if (!card) {
     return {
       statusCode: 500,
@@ -191,7 +190,6 @@ export async function updateStory(storyUrl, requestBody) {
   // Manage pull request merge
   if (`closed` === action && requestBody.pull_request.merged) {
     const status = await updateCardState(accessToken, card, deployedState)
-
     if (!status) {
       return {
         statusCode: 500,
@@ -216,7 +214,6 @@ export async function updateStory(storyUrl, requestBody) {
 
   // Apply changes if needed depending on PR labels
   const { labels = null } = requestBody.pull_request
-
   if (`labeled` === action && labels) {
     console.log(labels)
     response = await updateCardCategory(accessToken, card, labels)

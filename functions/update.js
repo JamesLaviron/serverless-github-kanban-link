@@ -39,12 +39,10 @@ export async function updateKanban(event) {
 
   // Check if event type is supported
   if (!(requestBody && ((`pull_request` in requestBody)))) {
-    response = {
+    return {
       statusCode: 400,
       body: `Event is not a Pull Request or a push event`,
     }
-
-    return response
   }
 
   // Get PR description
@@ -54,12 +52,10 @@ export async function updateKanban(event) {
   const zubeStory = getStory(description)
 
   if (!zubeStory) {
-    response = {
+    return {
       statusCode: 400,
       body: `Couldn't find zube story inside PR description`,
     }
-
-    return response
   }
 
   response = await updateStory(zubeStory, requestBody)
