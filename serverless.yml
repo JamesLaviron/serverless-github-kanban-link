@@ -38,8 +38,19 @@ plugins:
 custom:
   mySecret: ${ssm:/aws/reference/secretsmanager/dev/kanban/zube~true}
   safeguards:
-    - safeguard: no-secret-env-vars
-      title: No secrets in lambda ENV VARs
+    - title: No secrets in lambda ENV VARs
+      safeguard: no-secret-env-vars
+
+    - title: Restrict regions
+      safeguard: allowed-regions
+      description: Only deployments in EU regions are allowed
+      enforcementLevel: error # if this policy fails, then BLOCK the deployment
+      config: # this configures the allowed-regions safeguard
+        - eu-west-1
+        - eu-west-2
+        - eu-west-3
+      stage: # this policy will only be enforced if you deploy to prod or qa
+        - prod
   webpack:
     includeModules: true
 
