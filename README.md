@@ -25,3 +25,6 @@ Command: `./node_modules/.bin/eslint [YOUR_FILE]`
 
 ### Notes
 If you don't use vscode, please take care of the configuration. It could prevent you from running eslint.
+
+### TODO
+Generate a robot account on zube kanban for story signature
