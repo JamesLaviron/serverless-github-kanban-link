@@ -11,9 +11,9 @@ export function getCardNumber(cardUrl) {
 export function addDeployEnvToStory(storyDescription, deployEnv) {
   console.log(storyDescription)
   console.log(deployEnv)
-  console.log(`${storyDescription}\r\n\r\${deployEnv}`)
+  console.log(`${storyDescription}\r\n\r\/${deployEnv}`)
 
-  return `${storyDescription}\r\n\r\${deployEnv}`
+  return `${storyDescription}\r\n\r\/${deployEnv}`
 }
 
 export function getDestinationbranch(data) {
