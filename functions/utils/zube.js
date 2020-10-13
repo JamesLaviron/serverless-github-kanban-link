@@ -38,10 +38,6 @@ async function getCardByNumber(accessToken, cardNumber) {
 
 async function updateCardState(accessToken, card, categoryName) {
   try {
-    console.log(card)
-    console.log(categoryName)
-    console.log(accessToken)
-
     await got.put(`${baseUrl}cards/${card.id}/move`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
