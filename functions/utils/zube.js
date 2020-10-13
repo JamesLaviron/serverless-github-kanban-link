@@ -105,8 +105,14 @@ async function updateCardCategory(accessToken, card, labels) {
       promises.push(updateCardState(accessToken, card, readyForReview))
     }
   }
-
-  response = await Promise.all(promises)
+  if (promises) {
+    response = await Promise.all(promises)
+  } else {
+    return {
+      statusCode: 400,
+      body: `Event is not a Pull Request or a push event`,
+    }
+  }
 
   if (!response) {
     return {
@@ -187,5 +193,4 @@ export async function updateStory(storyUrl, requestBody) {
     statusCode: 400,
     body: `Didn't update story state because of wrong action`,
   }
-  // TODO - check that we exclude all other event actions
 }
