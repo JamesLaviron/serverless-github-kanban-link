@@ -61,10 +61,7 @@ async function updateCardState(accessToken, card, categoryName) {
   } catch (e) {
     console.error(e)
 
-    return {
-      statusCode: 500,
-      body: `Process finished with error: ${e.message}`,
-    }
+    return null
   }
 }
 
@@ -111,6 +108,13 @@ async function updateCardCategory(accessToken, card, labels) {
 
   response = await Promise.all(promises)
 
+  if (!response) {
+    return {
+      statusCode: 500,
+      body: `Couldn't update card successfully`,
+    }
+  }
+
   return response
 }
 
@@ -121,12 +125,10 @@ export async function updateStory(storyUrl, requestBody) {
   const accessToken = await getAccessToken()
 
   if (!accessToken) {
-    response = {
+    return {
       statusCode: 500,
       body: `Couldn't authenticate to kanban's API`,
     }
-
-    return response
   }
 
   const cardNumber = getCardNumber(storyUrl)
@@ -147,8 +149,15 @@ export async function updateStory(storyUrl, requestBody) {
 
   // Manage pull request merge
   if (`closed` === action && requestBody.pull_request.merged) {
-    // TODO - refacto this method so that it returns null
-    await updateCardState(accessToken, card, deployedState)
+    const status = await updateCardState(accessToken, card, deployedState)
+
+    if (!status) {
+      return {
+        statusCode: 500,
+        body: `Couldn't update card successfully`,
+      }
+    }
+
 
     // Update story description to set destination preproduction environment if possible
     if (`master` === requestBody.pull_request.base.ref) {
@@ -173,7 +182,6 @@ export async function updateStory(storyUrl, requestBody) {
     response = await updateCardCategory(accessToken, card, labels)
 
     return response
-    // TODO - manage where we have mutliple triggering labels on same PR
   }
 
   return {
