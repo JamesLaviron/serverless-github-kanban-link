@@ -156,8 +156,7 @@ export async function updateStory(storyUrl, requestBody) {
     await updateCardState(accessToken, card, deployedState)
 
     // Update story description to set destination preproduction environment if possible
-    const destinationBranch = getDestinationbranch(requestBody)
-    if (`master` === destinationBranch) {
+    if (`master` === requestBody.pull_request.base.ref) {
       card.body = addDeployEnvToStory(card.body, `Story déployée sur la branche master`)
     } else {
       card.body = addDeployEnvToStory(card.body, `Story non déployée sur master -> à voir avec le développeur de la story`)
