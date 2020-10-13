@@ -111,3 +111,6 @@ package-lock.json
 
 #Zube
 zube_api_key.pem
+
+#Vscode
+.vscode/settings.json
