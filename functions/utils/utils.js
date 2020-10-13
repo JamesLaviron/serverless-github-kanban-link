@@ -8,14 +8,10 @@ export function getCardNumber(cardUrl) {
   return /[^/]*$/.exec(cardUrl)[0]
 }
 
-export function addDeployEnvToStory(storyDescription, deployEnv) {
+export function addDeployEnvToStory(storyDescription, deployEnvText) {
   console.log(storyDescription)
-  console.log(deployEnv)
-  console.log(`${storyDescription}\r\n\r\/${deployEnv}`)
+  console.log(deployEnvText)
+  console.log(`${storyDescription}\r\n\r\\/${deployEnvText}`)
 
-  return `${storyDescription}\r\n\r\/${deployEnv}`
-}
-
-export function getDestinationbranch(data) {
-  return /[^/]*$/.exec(data.ref)[0]
+  return `${storyDescription}\r\n\r\\/${deployEnvText}`
 }
