@@ -26,7 +26,7 @@ async function getAccessToken() {
  * @param {string} accessToken
  * @param {int} cardNumber
  *
- * @returns {Object} card
+ * @returns {Object}
  */
 async function getCardByNumber(accessToken, cardNumber) {
   try {
@@ -53,6 +53,8 @@ async function getCardByNumber(accessToken, cardNumber) {
  * @param {string} accessToken
  * @param {Object} card
  * @param {string} categoryName
+ *
+ * @return {Object}
  */
 async function updateCardState(accessToken, card, categoryName) {
   try {
@@ -79,7 +81,10 @@ async function updateCardState(accessToken, card, categoryName) {
   } catch (e) {
     console.error(e)
 
-    return null
+    return {
+      statusCode: 500,
+      body: `Process finished with error: ${e.message}`,
+    }
   }
 }
 
@@ -119,44 +124,28 @@ async function updateCardBody(accessToken, card) {
 }
 
 /**
- * Update card category if it contains triggering labels
+ * Update card category if it contains triggering labels - WIP state has higher priority than RFR
  *
  * @param {string} accessToken
  * @param {Object} card
- * @param array labels
+ * @param {array}  labels
  *
  * @returns {Object}
  */
 async function updateCardCategory(accessToken, card, labels) {
-  const promises = []
   for (const label of labels) {
     console.log(label)
-    console.log(label.name)
-    if (`Work+In+Progress` === label.name) {
-      promises.push(updateCardState(accessToken, card, inProgress))
+    switch (label.name) {
+      case `Work+In+Progress`:
+        response = await updateCardState(accessToken, card, inProgress)
+
+        return response
+      case `Ready+for+Review`:
+        response = await updateCardState(accessToken, card, readyForReview)
+
+        return response
+      default:
     }
-
-    if (`Ready+for+Review` === label.name) {
-      promises.push(updateCardState(accessToken, card, readyForReview))
-    }
-  }
-
-  if (promises) {
-    response = await Promise.all(promises)
-    .then(function() {
-      return {
-        statusCode: 200,
-        body: `Update body of card number ${card.number}`,
-      }
-    })
-    .catch(function(e) {
-      return {
-        statusCode: 500,
-        body: `Process finished with error: ${e.message}`,
-      }
-    })
-
-    return response
   }
 
   return {
@@ -189,19 +178,8 @@ export async function updateStory(storyUrl, requestBody) {
   // Get github event informations
   const { action = null } = requestBody
 
-  console.log(action)
-  console.log(requestBody.pull_request.merged)
-
   // Manage pull request merge
   if (`closed` === action && requestBody.pull_request.merged) {
-    const status = await updateCardState(accessToken, card, deployedState)
-    if (!status) {
-      return {
-        statusCode: 500,
-        body: `Couldn't update card successfully`,
-      }
-    }
-
     // Update story description to set destination preproduction environment if possible
     if (`master` === requestBody.pull_request.base.ref) {
       console.log(`card.body ${card.body}`)
@@ -210,11 +188,23 @@ export async function updateStory(storyUrl, requestBody) {
       card.body = addDeployEnvToStory(card.body, `Story non déployée sur master -> à voir avec le développeur de la story`)
     }
 
-    response = await updateCardBody(accessToken, card)
+    const promises = []
+    promises.push(updateCardState(accessToken, card, deployedState))
+    promises.push(updateCardBody(accessToken, card))
 
-    console.log(response)
+    await Promise.all(promises)
+      .then(() => ({
+        statusCode: 200,
+        body: `Successfully updated ${card.number} following merge`,
+      }))
+      .catch((e) => {
+        console.error(e)
 
-    return response
+        return {
+          statusCode: 500,
+          body: `Process finished with error: ${e.message}`,
+        }
+      })
   }
 
   // Apply changes if needed depending on PR labels
