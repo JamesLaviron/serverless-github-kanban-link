@@ -1,5 +1,5 @@
-import { updateStory } from './utils/zube'
-import { getStory } from './utils/utils'
+import { updateCard } from './utils/zube'
+import { getCard } from './utils/utils'
 import { validateWebhook, getEventRequestBody } from './utils/github'
 
 /**
@@ -48,17 +48,17 @@ export async function updateKanban(event) {
   // Get PR description
   const description = requestBody.pull_request.body
 
-  // Get zube story url linked to the PR
-  const zubeStory = getStory(description)
+  // Get zube card url linked to the PR
+  const zubeCard = getCard(description)
 
-  if (!zubeStory) {
+  if (!zubeCard) {
     return {
       statusCode: 400,
       body: `Couldn't find zube story inside PR description`,
     }
   }
 
-  response = await updateStory(zubeStory, requestBody)
+  response = await updateCard(zubeCard, requestBody)
 
   return response
 }

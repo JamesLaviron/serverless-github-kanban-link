@@ -1,5 +1,5 @@
 import got from 'got'
-import { addDeployEnvToStory, getCardNumber } from './utils'
+import { addDeployEnvToCard, getCardNumber } from './utils'
 import { authenticate } from './authentication'
 
 const baseUrl = process.env.KANBAN_BASE_URL
@@ -56,7 +56,7 @@ async function getCardByNumber(accessToken, cardNumber) {
  *
  * @return {Object}
  */
-async function updateCardState(accessToken, card, categoryName) {
+async function updateCardCategory(accessToken, card, categoryName) {
   try {
     await got.put(`${baseUrl}cards/${card.id}/move`, {
       headers: {
@@ -132,16 +132,16 @@ async function updateCardBody(accessToken, card) {
  *
  * @returns {Object}
  */
-async function updateCardCategory(accessToken, card, labels) {
+async function updateCardState(accessToken, card, labels) {
   for (const label of labels) {
     console.log(label)
     switch (label.name) {
       case `Work+In+Progress`:
-        response = await updateCardState(accessToken, card, inProgress)
+        response = await updateCardCategory(accessToken, card, inProgress)
 
         return response
       case `Ready+for+Review`:
-        response = await updateCardState(accessToken, card, readyForReview)
+        response = await updateCardCategory(accessToken, card, readyForReview)
 
         return response
       default:
@@ -154,8 +154,8 @@ async function updateCardCategory(accessToken, card, labels) {
   }
 }
 
-export async function updateStory(storyUrl, requestBody) {
-  console.log(`begin updateState of following story: ${storyUrl}`)
+export async function updateCard(cardUrl, requestBody) {
+  console.log(`begin updateState of following card: ${cardUrl}`)
 
   // Retrieve card from API
   const accessToken = await getAccessToken()
@@ -166,7 +166,7 @@ export async function updateStory(storyUrl, requestBody) {
     }
   }
 
-  const cardNumber = getCardNumber(storyUrl)
+  const cardNumber = getCardNumber(cardUrl)
   const card = await getCardByNumber(accessToken, cardNumber)
   if (!card) {
     return {
@@ -180,16 +180,16 @@ export async function updateStory(storyUrl, requestBody) {
 
   // Manage pull request merge
   if (`closed` === action && requestBody.pull_request.merged) {
-    // Update story description to set destination preproduction environment if possible
+    // Update card description to set destination preproduction environment if possible
     if (`master` === requestBody.pull_request.base.ref) {
       console.log(`card.body ${card.body}`)
-      card.body = addDeployEnvToStory(card.body, `Story déployée sur la branche master`)
+      card.body = addDeployEnvToCard(card.body, `Story déployée sur la branche master`)
     } else {
-      card.body = addDeployEnvToStory(card.body, `Story non déployée sur master -> à voir avec le développeur de la story`)
+      card.body = addDeployEnvToCard(card.body, `Story non déployée sur master -> à voir avec le développeur de la story`)
     }
 
     const promises = []
-    promises.push(updateCardState(accessToken, card, deployedState))
+    promises.push(updateCardCategory(accessToken, card, deployedState))
     promises.push(updateCardBody(accessToken, card))
 
     await Promise.all(promises)
@@ -211,13 +211,13 @@ export async function updateStory(storyUrl, requestBody) {
   const { labels = null } = requestBody.pull_request
   if (`labeled` === action && labels) {
     console.log(labels)
-    response = await updateCardCategory(accessToken, card, labels)
+    response = await updateCardState(accessToken, card, labels)
 
     return response
   }
 
   return {
     statusCode: 400,
-    body: `Didn't update story state because of wrong action`,
+    body: `Didn't update card state because of wrong action`,
   }
 }
