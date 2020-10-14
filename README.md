@@ -30,9 +30,9 @@ Add following environment variables to your serverless configuration:
 - `clientId`: your zube client ID.
 
 Define also the zube categories you want to support and their associated triggering labels:
-- `inProgress`: name of the zube's WIP category - link it to your WIP PR state.
-- `inProgressLabel`: name of the github's WIP label - link it to your WIP PR state.
-- `readyForReview`: name of the zube's RFR category - link it to your RFR PR state.
+- `inProgress`: name of the zube's WIP category.
+- `inProgressLabel`: name of the github's WIP label.
+- `readyForReview`: name of the zube's RFR category.
 - `readyForReviewLabel`: name of the github's RFR label (with `+` instead of each space)
 - `deployed`: name of the zube's validation category - link it to your code validation state. By default it assumes merge on master is followed by an automatic deployment.
 - `deployBranch`: name of the base ref that triggers deployment on your main preproduction environment.
