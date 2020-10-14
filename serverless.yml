@@ -23,15 +23,17 @@ functions:
           path: webhook
           method: POST
     environment:
-      KANBAN_BASE_URL: ${param:kanbanApiBaseUrl}
+      KANBAN_BASE_URL: 'https://zube.io/api/'
       API_KEY: ${self:custom.mySecret.zubeApiKey}
       KANBAN_CLIENT_ID: ${param:kanbanClientId}
       WIP_STATE: ${param:inProgress}
       RFR_STATE: ${param:readyForReview}
       DEPLOYED_STATE: ${param:deployed}
+      DEPLOY_BRANCH: ${param:deployBranch}
+      WIP_LABEL: ${param:inProgressLabel}
+      RFR_LABEL: ${param:readyForReviewLabel}
 
 plugins:
-  - serverless-offline
   - '@serverless/safeguards-plugin'
   - serverless-webpack
 

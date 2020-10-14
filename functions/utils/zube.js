@@ -7,6 +7,9 @@ const clientId = process.env.KANBAN_CLIENT_ID
 const deployedState = process.env.DEPLOYED_STATE
 const inProgress = process.env.WIP_STATE
 const readyForReview = process.env.RFR_STATE
+const deployBranch = process.env.DEPLOY_BRANCH
+const inProgressLabel = process.env.WIP_LABEL
+const readyForReviewLabel = process.env.RFR_LABEL
 
 let response
 
@@ -136,11 +139,11 @@ async function updateCardState(accessToken, card, labels) {
   for (const label of labels) {
     console.log(label)
     switch (label.name) {
-      case `Work+In+Progress`:
+      case inProgressLabel:
         response = await updateCardCategory(accessToken, card, inProgress)
 
         return response
-      case `Ready+for+Review`:
+      case readyForReviewLabel:
         response = await updateCardCategory(accessToken, card, readyForReview)
 
         return response
@@ -181,7 +184,7 @@ export async function updateCard(cardUrl, requestBody) {
   // Manage pull request merge
   if (`closed` === action && requestBody.pull_request.merged) {
     // Update card description to set destination preproduction environment if possible
-    if (`master` === requestBody.pull_request.base.ref) {
+    if (deployBranch === requestBody.pull_request.base.ref) {
       console.log(`card.body ${card.body}`)
       card.body = addDeployEnvToCard(card.body, `Story déployée sur la branche master`)
     } else {
