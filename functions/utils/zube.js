@@ -136,6 +136,7 @@ async function updateCardBody(accessToken, card) {
  * @returns {Object}
  */
 async function updateCardState(accessToken, card, labels) {
+  /* eslint-disable no-await-in-loop, no-unused-vars */
   for (const label of labels) {
     console.log(label)
     switch (label.name) {
@@ -150,6 +151,7 @@ async function updateCardState(accessToken, card, labels) {
       default:
     }
   }
+  /* eslint-disable no-await-in-loop */
 
   return {
     statusCode: 400,
