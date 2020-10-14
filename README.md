@@ -14,7 +14,7 @@ Link your github PR state to your kanban:
 - An AWS account
 - Defined [provider credentials](https://serverless.com/framework/docs/providers/aws/guide/credentials/)
 
-## Setup
+## Setup
 
 ### Deploy the code
 
