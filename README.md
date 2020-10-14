@@ -56,6 +56,7 @@ Command: `./node_modules/.bin/eslint [YOUR_FILE]`
 
 ### Notes
 If you don't use vscode, please take care of the configuration. It could prevent you from running eslint.
+FYI: when deploying, `Configuration warning at 'custom.safeguards': should be object` is a wrong warning.
 
 ### Acknowledgments
 This project was inspired by [20 minutes github check](https://github.com/20minutes/serverless-github-check)
