@@ -133,8 +133,9 @@ export async function updateCardBody(accessToken, card) {
  * @returns {Object}
  */
 export async function updateCardState(accessToken, card, labels) {
+  const labelNames = labels.map((element) => element.name)
   /* eslint-disable no-await-in-loop, no-unused-vars */
-  for (const label of labels) {
+  for (const label of labelNames) {
     console.log(label)
     switch (label.name) {
       case inProgressLabel:
@@ -142,7 +143,9 @@ export async function updateCardState(accessToken, card, labels) {
 
         return response
       case readyForReviewLabel:
-        response = await updateCardCategory(accessToken, card, readyForReview)
+        if (!labelNames.includes(inProgressLabel)) {
+          response = await updateCardCategory(accessToken, card, readyForReview)
+        }
 
         return response
       default:
