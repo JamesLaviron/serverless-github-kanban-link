@@ -1,13 +1,10 @@
 import got from 'got'
-import { addDeployEnvToCard, getCardNumber } from './utils'
 import { authenticate } from './authentication'
 
 const baseUrl = process.env.KANBAN_BASE_URL
 const clientId = process.env.KANBAN_CLIENT_ID
-const deployedState = process.env.DEPLOYED_STATE
 const inProgress = process.env.WIP_STATE
 const readyForReview = process.env.RFR_STATE
-const deployBranch = process.env.DEPLOY_BRANCH
 const inProgressLabel = process.env.WIP_LABEL
 const readyForReviewLabel = process.env.RFR_LABEL
 
@@ -16,7 +13,7 @@ let response
 /**
  * Get access token to connect to zube API
  */
-async function getAccessToken() {
+export async function getAccessToken() {
   // Get access token to request API
   const accessToken = await authenticate()
 
@@ -31,7 +28,7 @@ async function getAccessToken() {
  *
  * @returns {Object}
  */
-async function getCardByNumber(accessToken, cardNumber) {
+export async function getCardByNumber(accessToken, cardNumber) {
   try {
     const result = await got(`${baseUrl}cards?where[number]=${cardNumber}`, {
       headers: {
@@ -59,7 +56,7 @@ async function getCardByNumber(accessToken, cardNumber) {
  *
  * @return {Object}
  */
-async function updateCardCategory(accessToken, card, categoryName) {
+export async function updateCardCategory(accessToken, card, categoryName) {
   try {
     await got.put(`${baseUrl}cards/${card.id}/move`, {
       headers: {
@@ -99,7 +96,7 @@ async function updateCardCategory(accessToken, card, categoryName) {
  *
  * @returns {Object}
  */
-async function updateCardBody(accessToken, card) {
+export async function updateCardBody(accessToken, card) {
   try {
     await got.put(`${baseUrl}cards/${card.id}`, {
       headers: {
@@ -135,7 +132,7 @@ async function updateCardBody(accessToken, card) {
  *
  * @returns {Object}
  */
-async function updateCardState(accessToken, card, labels) {
+export async function updateCardState(accessToken, card, labels) {
   /* eslint-disable no-await-in-loop, no-unused-vars */
   for (const label of labels) {
     console.log(label)
@@ -151,78 +148,10 @@ async function updateCardState(accessToken, card, labels) {
       default:
     }
   }
-  /* eslint-disable no-await-in-loop */
+  /* eslint-disable no-await-in-loop, no-unused-vars */
 
   return {
     statusCode: 400,
     body: `Event is not a Pull Request or a push event`,
-  }
-}
-
-export async function updateCard(cardUrl, requestBody) {
-  console.log(`begin updateState of following card: ${cardUrl}`)
-
-  // Retrieve card from API
-  const accessToken = await getAccessToken()
-  if (!accessToken) {
-    return {
-      statusCode: 500,
-      body: `Couldn't authenticate to kanban's API`,
-    }
-  }
-
-  const cardNumber = getCardNumber(cardUrl)
-  const card = await getCardByNumber(accessToken, cardNumber)
-  if (!card) {
-    return {
-      statusCode: 500,
-      body: `Issue to find card with number ${cardNumber}`,
-    }
-  }
-
-  // Get github event informations
-  const { action = null } = requestBody
-
-  // Manage pull request merge
-  if (`closed` === action && requestBody.pull_request.merged) {
-    // Update card description to set destination preproduction environment if possible
-    if (deployBranch === requestBody.pull_request.base.ref) {
-      console.log(`card.body ${card.body}`)
-      card.body = addDeployEnvToCard(card.body, `Story déployée sur la branche master`)
-    } else {
-      card.body = addDeployEnvToCard(card.body, `Story non déployée sur master -> à voir avec le développeur de la story`)
-    }
-
-    const promises = []
-    promises.push(updateCardCategory(accessToken, card, deployedState))
-    promises.push(updateCardBody(accessToken, card))
-
-    await Promise.all(promises)
-      .then(() => ({
-        statusCode: 200,
-        body: `Successfully updated ${card.number} following merge`,
-      }))
-      .catch((e) => {
-        console.error(e)
-
-        return {
-          statusCode: 500,
-          body: `Process finished with error: ${e.message}`,
-        }
-      })
-  }
-
-  // Apply changes if needed depending on PR labels
-  const { labels = null } = requestBody.pull_request
-  if (`labeled` === action && labels) {
-    console.log(labels)
-    response = await updateCardState(accessToken, card, labels)
-
-    return response
-  }
-
-  return {
-    statusCode: 400,
-    body: `Didn't update card state because of wrong action`,
   }
 }

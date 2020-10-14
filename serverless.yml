@@ -29,7 +29,7 @@ functions:
       WIP_STATE: ${param:inProgress}
       RFR_STATE: ${param:readyForReview}
       DEPLOYED_STATE: ${param:deployed}
-      DEPLOY_BRANCH: ${param:deployBranch}
+      DEPLOY_BRANCH: ${param:deployBranch,'master'}
       WIP_LABEL: ${param:inProgressLabel}
       RFR_LABEL: ${param:readyForReviewLabel}
 

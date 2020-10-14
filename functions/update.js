@@ -1,14 +1,18 @@
-import { updateCard } from './utils/zube'
-import { getCard } from './utils/utils'
+import {
+  getAccessToken, getCardByNumber, updateCardCategory, updateCardBody, updateCardState,
+} from './utils/zube'
+import { addDeployEnvToCard, getCardNumber, getCardUrl } from './utils/utils'
 import { validateWebhook, getEventRequestBody } from './utils/github'
+
+let response
+const deployedState = process.env.DEPLOYED_STATE
+const deployBranch = process.env.DEPLOY_BRANCH
 
 /**
  * Webhook main method
  */
 export async function updateKanban(event) {
   console.info(`Begin execution`)
-
-  let response
 
   // Get body from request
   const requestBody = getEventRequestBody(event)
@@ -49,16 +53,78 @@ export async function updateKanban(event) {
   const description = requestBody.pull_request.body
 
   // Get zube card url linked to the PR
-  const zubeCard = getCard(description)
+  const zubeCardUrl = getCardUrl(description)
 
-  if (!zubeCard) {
+  if (!zubeCardUrl) {
     return {
       statusCode: 400,
       body: `Couldn't find zube story inside PR description`,
     }
   }
 
-  response = await updateCard(zubeCard, requestBody)
+  console.log(`begin updateState of following card: ${zubeCardUrl}`)
 
-  return response
+  // Retrieve card from API
+  const accessToken = await getAccessToken()
+  if (!accessToken) {
+    return {
+      statusCode: 500,
+      body: `Couldn't authenticate to kanban's API`,
+    }
+  }
+
+  const cardNumber = getCardNumber(zubeCardUrl)
+  const card = await getCardByNumber(accessToken, cardNumber)
+  if (!card) {
+    return {
+      statusCode: 500,
+      body: `Issue to find card with number ${cardNumber}`,
+    }
+  }
+
+  // Get github event informations
+  const { action = null } = requestBody
+
+  // Manage pull request merge
+  if (`closed` === action && requestBody.pull_request.merged) {
+    console.log(`card.body ${card.body}`)
+    // Update card description to set destination preproduction environment if possible
+    if (deployBranch === requestBody.pull_request.base.ref) {
+      card.body = addDeployEnvToCard(card.body, `Story déployée sur la branche master`)
+    } else {
+      card.body = addDeployEnvToCard(card.body, `Story non déployée sur master -> à voir avec le développeur de la story`)
+    }
+
+    const promises = []
+    promises.push(updateCardCategory(accessToken, card, deployedState))
+    promises.push(updateCardBody(accessToken, card))
+
+    await Promise.all(promises)
+      .then(() => ({
+        statusCode: 200,
+        body: `Successfully updated ${card.number} following merge`,
+      }))
+      .catch((e) => {
+        console.error(e)
+
+        return {
+          statusCode: 500,
+          body: `Process finished with error: ${e.message}`,
+        }
+      })
+  }
+
+  // Apply changes if needed depending on PR labels
+  const { labels = null } = requestBody.pull_request
+  if (`labeled` === action && labels) {
+    console.log(labels)
+    response = await updateCardState(accessToken, card, labels)
+
+    return response
+  }
+
+  return {
+    statusCode: 400,
+    body: `Didn't update card state because of wrong action`,
+  }
 }
