@@ -59,6 +59,7 @@ Command: `./node_modules/.bin/eslint [YOUR_FILE]`
 - This webhook doesn't depend on a specific workspace or project. Feel free to add it on any project, as soon as it uses both github and zube :smiley:
 - If you don't use vscode, please take care of the configuration. It could prevent you from running eslint.
 - FYI: when deploying, `Configuration warning at 'custom.safeguards': should be object` is a wrong warning.
+- Don't forget to disable your CI software on pull request creation to avoid useless builds on `WIP` PRs.
 
 ### Acknowledgments
 This project was inspired by [20 minutes github check](https://github.com/20minutes/serverless-github-check)
