@@ -19,15 +19,14 @@ Link your github PR state to your kanban:
 ### Deploy the code
 
 - Generate a specific 'robot' account on zube kanban for card signature
-- Get a [new personal .pem file](https://zube.io/docs/api) on Zube
-- Set it in [AWS Secret manager](https://eu-west-1.console.aws.amazon.com/secretsmanager/home?region=eu-west-1#/newSecret?step=selectSecret) with name: `dev/kanban/zube` and use default configuration.
+- Get a [new personal .pem file](https://zube.io/docs/api) on Zube (Please add newline with `\n` to keep file consistancy)
+- Set it in [AWS Secret manager](https://eu-west-1.console.aws.amazon.com/secretsmanager/home?region=eu-west-1#/newSecret?step=selectSecret) with name: `{stage}/kanban/zube` and key `zubeApiKey`, select `other secret types` - apart of that use default configuration.
 - Deploy the service using: `serverless deploy`
 
 ### Configure serverless environment variables
 
 Add following environment variables to your serverless configuration:
 - `kanbanClientId`: your zube robot client ID.
-- `clientId`: your zube client ID.
 
 Define also the zube categories you want to support and their associated triggering labels:
 - `inProgress`: name of the zube's WIP category.
