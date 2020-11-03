@@ -137,7 +137,7 @@ export async function updateCardState(accessToken, card, labels) {
   /* eslint-disable no-await-in-loop, no-unused-vars */
   for (const label of labelNames) {
     console.log(label)
-    switch (label.name) {
+    switch (label) {
       case inProgressLabel:
         response = await updateCardCategory(accessToken, card, inProgress)
 
@@ -155,6 +155,6 @@ export async function updateCardState(accessToken, card, labels) {
 
   return {
     statusCode: 400,
-    body: `Event is not a Pull Request or a push event`,
+    body: `Couldn't update card due to empty/wrong labels`,
   }
 }
