@@ -7,6 +7,7 @@ const inProgress = process.env.WIP_STATE
 const readyForReview = process.env.RFR_STATE
 const inProgressLabel = process.env.WIP_LABEL
 const readyForReviewLabel = process.env.RFR_LABEL
+const pivotCardNumber = process.env.PIVOT_CARD_NUMBER
 
 let response
 
@@ -48,6 +49,69 @@ export async function getCardByNumber(accessToken, cardNumber) {
 }
 
 /**
+ * Get card using its number
+ *
+ * @param {string} accessToken
+ * @param {int} workSpaceId
+ *
+ * @returns {Object}
+ */
+export async function getCardPosition(accessToken, workSpaceId, workZubeSpaceId) {
+  try {
+    const result = await got(`${baseUrl}workspaces/${workSpaceId}/categories/${workZubeSpaceId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        Accept: `application/json`,
+        'Content-Type': `application/json`,
+        'X-Client-ID': clientId,
+      },
+    })
+
+    const cards = JSON.parse(result.body).cards
+
+    const cardPosition = null
+    Object.keys(cards).forEach(function (key) {
+      if (pivotCardNumber === cards[key]) {
+        cardPosition = key + 1
+      }
+    });
+
+    return cardPosition
+  } catch (e) {
+    console.error(e)
+
+    return null
+  }
+}
+
+/**
+ * Get workspace metadata
+ *
+ * @param {string} accessToken
+ * @param {int} workSpaceId
+ *
+ * @returns {Object}
+ */
+export async function getWorkSpaceMetadata(accessToken, workSpaceId) {
+  try {
+    const result = await got(`${baseUrl}workspaces/${workSpaceId}/categories_metadata`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        Accept: `application/json`,
+        'Content-Type': `application/json`,
+        'X-Client-ID': clientId,
+      },
+    })
+
+    return JSON.parse(result.body).data
+  } catch (e) {
+    console.error(e)
+
+    return null
+  }
+}
+
+/**
  * Update category of zube's card
  *
  * @param {string} accessToken
@@ -56,7 +120,7 @@ export async function getCardByNumber(accessToken, cardNumber) {
  *
  * @return {Object}
  */
-export async function updateCardCategory(accessToken, card, categoryName) {
+export async function updateCardCategory(accessToken, card, categoryName, cardPosition = 1) {
   try {
     await got.put(`${baseUrl}cards/${card.id}/move`, {
       headers: {
@@ -66,7 +130,7 @@ export async function updateCardCategory(accessToken, card, categoryName) {
       },
       body: JSON.stringify({
         destination: {
-          position: 1,
+          position: cardPosition,
           type: `category`,
           name: categoryName,
           workspace_id: card.workspace_id,

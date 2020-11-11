@@ -32,6 +32,7 @@ functions:
       DEPLOY_BRANCH: ${param:deployBranch,'master'}
       WIP_LABEL: ${param:inProgressLabel}
       RFR_LABEL: ${param:readyForReviewLabel}
+      PIVOT_CARD_NUMBER: ${param:pivotCardNumber, ''}
 
 plugins:
   - '@serverless/safeguards-plugin'
